@@ -139,29 +139,32 @@ class HBNBCommand(cmd.Cmd):
         args_list = args_list[1:]
 
         attributes = {}
-
+ # Handle case where a single argument is given as the name
+        if len(args_list) == 1 and "=" not in args_list[0]:
+            attributes['name'] = args_list[0]
+        else:
         # search through the list of arguments
-        for arg in args_list:
+            for arg in args_list:
             # key/value pairs split and saved into arg_toks list
-            arg_toks = arg.split("=")
+                arg_toks = arg.split("=")
 
             # Unquote, underscore to space
-            if len(args_list) != 2:
-                continue
-            key, value = arg_toks[0], arg_toks[1]
+                if len(args_list) != 2:
+                    continue
+                key, value = arg_toks[0], arg_toks[1]
 
             # convert values to appropriate data types
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1].replace('_', ' ')
-            try:
-                value = float(value)
-            except ValueError:
-                pass
-            try:
-                value = int(value)
-            except ValueError:
-                pass
-            attributes[key] = value
+                if value.startswith('"') and value.endswith('"'):
+                    value = value[1:-1].replace('_', ' ')
+                try:
+                    value = float(value)
+                except ValueError:
+                    pass
+                try:
+                    value = int(value)
+                except ValueError:
+                    pass
+                attributes[key] = value
         # Check if name attribute is provided, otherwise assign a default name
         if 'name' not in attributes:
             attributes['name'] = 'default_name'
@@ -268,7 +271,7 @@ class HBNBCommand(cmd.Cmd):
         print(print_list)
 
     def help_all(self):
-        """ Help information FAIL: missing new information: "[State] (36e0b5b9-26f9-4aed-82af-38cf9124d6dd) {'id': '36e0b5b9-26f9-4aed-82af-38cf9124d6dd', 'created_at': '2024-06-28T17:28:12.352884', 'updated_at': '2024-06-28T17:28:12.352884', 'name': 'default_name'}"for the all command """
+        """ Help information for the all command """
         print("Shows all objects, or all of a class")
         print("[Usage]: all <className>\n")
 
