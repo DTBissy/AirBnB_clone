@@ -139,35 +139,29 @@ class HBNBCommand(cmd.Cmd):
         args_list = args_list[1:]
 
         attributes = {}
- # Handle case where a single argument is given as the name
-        if len(args_list) == 1 and "=" not in args_list[0]:
-            attributes['name'] = args_list[0]
-        else:
+
         # search through the list of arguments
-            for arg in args_list:
+        for arg in args_list:
             # key/value pairs split and saved into arg_toks list
-                arg_toks = arg.split("=")
+            arg_toks = arg.split("=")
 
             # Unquote, underscore to space
-                if len(args_list) != 2:
-                    continue
-                key, value = arg_toks[0], arg_toks[1]
+            if len(arg_toks) != 2:
+                continue
+            key, value = arg_toks[0], arg_toks[1]
 
             # convert values to appropriate data types
-                if value.startswith('"') and value.endswith('"'):
-                    value = value[1:-1].replace('_', ' ')
-                try:
-                    value = float(value)
-                except ValueError:
-                    pass
-                try:
-                    value = int(value)
-                except ValueError:
-                    pass
-                attributes[key] = value
-        # Check if name attribute is provided, otherwise assign a default name
-        if 'name' not in attributes:
-            attributes['name'] = 'default_name'
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1].replace('_', ' ')
+            try:
+                value = float(value)
+            except ValueError:
+                pass
+            try:
+                value = int(value)
+            except ValueError:
+                pass
+            attributes[key] = value
 
         now = datetime.now().isoformat()
         attributes['created_at'] = now
