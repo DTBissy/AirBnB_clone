@@ -161,6 +161,13 @@ class HBNBCommand(cmd.Cmd):
             except ValueError:
                 pass
             attributes[key] = value
+        # Check if name attribute is provided, otherwise assign a default name
+        if 'name' not in attributes:
+            attributes['name'] = 'default_name'
+
+        now = datetime.now().isoformat()
+        attributes['created_at'] = now
+        attributes['updated_at'] = now
 
         new_instance = models.class_dict[class_name](**attributes)
 
