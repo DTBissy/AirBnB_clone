@@ -151,7 +151,7 @@ class HBNBCommand(cmd.Cmd):
             key, value = arg_toks[0], arg_toks[1]
 
             # convert values to appropriate data types
-            if value.startswith('"') and value.endswith('"'):
+            if value.startswith('"' or '>') and value.endswith('"' or '>'):
                 value = value[1:-1].replace('_', ' ')
             try:
                 value = float(value)
