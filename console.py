@@ -113,50 +113,18 @@ class HBNBCommand(cmd.Cmd):
         """ Overrides the emptyline method of CMD """
         pass
 
-import re
-
-class HBNBCommand:
-    # Assuming classes is a dictionary mapping class names to their constructors
-    classes = {}
-
-    def __init__(self):
-        self.storage = {}  # Assuming this is where instances are stored
-
     def do_create(self, args):
-        """Create an object of any class with given parameters."""
+        """ Create an object of any class"""
         if not args:
             print("** class name missing **")
             return
-        elif args not in self.classes:
+        elif args not in HBNBCommand.classes:
             print("** class doesn't exist **")
             return
-
-        # Split the arguments into class name and parameters
-        class_name, params = args.split(' ', 1)
-
-        # Parse parameters
-        param_dict = {}
-        for param in params.split():
-            key, value = param.split('=')
-            try:
-                # Handle string values
-                if value.startswith('"') and value.endswith('"'):
-                    value = value[1:-1].replace('\\"', '"').replace('_', ' ')
-                # Handle float values
-                elif '.' in value:
-                    value = float(value)
-                # Default to integer if none of the above conditions match
-                else:
-                    value = int(value)
-                param_dict[key] = value
-            except ValueError:
-                continue
-
-        # Create the object with the parsed parameters
-        new_instance = self.classes[class_name](**param_dict)
-        self.storage[new_instance.id] = new_instance
+        new_instance = HBNBCommand.classes[args]()
+        storage.save()
         print(new_instance.id)
-
+        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
