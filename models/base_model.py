@@ -39,6 +39,10 @@ class BaseModel:
         dictionary.update(self.__dict__)
         dictionary.update({'__class__':
                           (str(type(self)).split('.')[-1]).split('\'')[0]})
-        dictionary['created_at'] = self.created_at.format()
-        dictionary['updated_at'] = self.updated_at.format()
+        dictionary['created_at'] = self.created_at.strftime('%Y-%m-%dT%H:%M:%S.%f')
+        dictionary['updated_at'] = self.updated_at.strftime('%Y-%m-%dT%H:%M:%S.%f')
+        
+        if hasattr(self, 'name'):
+            dictionary['name'] = getattr(self, 'name')
+
         return dictionary
