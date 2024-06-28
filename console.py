@@ -114,17 +114,60 @@ class HBNBCommand(cmd.Cmd):
         pass
 
     def do_create(self, args):
-        """ Create an object of any class"""
+        """creates new instance of class
+
+        additional attributes can be provided as key/value pairs
+        """
+
         if not args:
             print("** class name missing **")
             return
-        elif args not in HBNBCommand.classes:
+
+        args_list = args.split()
+        # assumes first arg is class name
+        class_name = args_list[0]
+
+        # checks if arg is valid <class name> (in class_dict)
+        if class_name not in models.class_dict:
             print("** class doesn't exist **")
             return
-        new_instance = HBNBCommand.classes[args]()
+
+        # since class name is taken care of
+        # now evaluate remaining args from input
+        args_list = args_list[1:]
+
+        attributes = {}
+
+        # search through the list of arguments
+        for arg in args_list:
+            # key/value pairs split and saved into arg_toks list
+            arg_toks = arg.split("=")
+
+            # Unquote, underscore to space
+            if len(args_list) != 2:
+                continue
+            key, value = arg_toks[0], arg_toks[1]
+
+            # convert values to appropriate data types
+            if value.startswith('"') and value.endswith('"'):
+                value = value[1:-1].replace('_', ' ')
+            try:
+                value = float(value)
+            except ValueError:
+                pass
+            try:
+                value = int(value)
+            except ValueError:
+                pass
+            attributes[key] = value
+
+        new_instance = models.class_dict[class_name](**attributes)
+
+        # save call
+        storage.new(new_instance)
         storage.save()
+
         print(new_instance.id)
-        storage.save()
 
     def help_create(self):
         """ Help information for the create method """
