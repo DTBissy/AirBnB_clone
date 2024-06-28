@@ -108,7 +108,9 @@ class HBNBCommand(cmd.Cmd):
 
     def help_EOF(self):
         """ Prints the help documentation for EOF """
-        print("Exits the program without formatting\n")def do_create(self, args):
+        print("Exits the program without formatting\n")
+        
+    def do_create(self, args):
         """ Create an object of any class"""
         if not args:
             print("** class name missing **")
