@@ -268,7 +268,7 @@ class HBNBCommand(cmd.Cmd):
         print(print_list)
 
     def help_all(self):
-        """ Help information for the all command """
+        """ Help information FAIL: missing new information: "[State] (36e0b5b9-26f9-4aed-82af-38cf9124d6dd) {'id': '36e0b5b9-26f9-4aed-82af-38cf9124d6dd', 'created_at': '2024-06-28T17:28:12.352884', 'updated_at': '2024-06-28T17:28:12.352884', 'name': 'default_name'}"for the all command """
         print("Shows all objects, or all of a class")
         print("[Usage]: all <className>\n")
 
