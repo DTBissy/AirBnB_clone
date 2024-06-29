@@ -17,17 +17,6 @@ class FileStorage:
         'User': user.User
     }
 
-    def all(self, cls=None):
-        """Returns a dictionary of models currently in storage by class"""
-        if cls is not None:
-            if cls in self.models.keys():
-                cls=self.models.get(cls)
-            id = {}
-            for key, val in self.__objects.items():
-                if cls == type(val):
-                    id[key] = val
-                return id
-            return self.__objects
     def new(self, obj):
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
