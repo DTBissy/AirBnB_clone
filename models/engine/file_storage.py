@@ -27,9 +27,8 @@ class FileStorage:
                 for id in ids:
                     key = id.__class__.__name__ + "." + id.id
                     dict[key] = id
-                return dict
+        return dict
 
-        return FileStorage.__objects
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
