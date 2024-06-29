@@ -11,11 +11,8 @@ class FileStorage:
 
     def all(self, cls=None):
         """ Gets all stuff from a storage"""
-        if cls is None:
-            return dict(self.__objects.values())
-        else:
-            return [obj for obj in self.__objects.values() if isinstance(obj, cls)]
-
+        return FileStorage.__objects
+    
     def new(self, obj):
         """Adds new object to storage dictionary"""
         self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
