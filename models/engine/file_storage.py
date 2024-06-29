@@ -8,18 +8,13 @@ class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
-    models = {
-        'Amenity': amenity.Amenity,
-        'City': city.City,
-        'Place': place.Place,
-        'Review': review.Review,
-        'State': state.State,
-        'User': user.User
-    }
 
     def all(self, cls=None):
         """ Gets all stuff from a storage"""
-        return FileStorage.__objects
+        if cls is None:
+            return dict(self.__objects.values())
+        else:
+            return [obj for obj in self.__objects.values() if isinstance(obj, cls)]
 
     def new(self, obj):
         """Adds new object to storage dictionary"""
