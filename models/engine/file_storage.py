@@ -10,8 +10,10 @@ class FileStorage:
     __objects = {}
 
     def all(self, cls=None):
-        """ Gets all stuff from a storage"""
-        return FileStorage.__objects
+        """Gets all objects from storage, optionally filtered by class"""
+        if cls:
+            return [v for v in self.__objects.values() if isinstance(v, cls)]
+        return self.__objects
     
     def new(self, obj):
         """Adds new object to storage dictionary"""
