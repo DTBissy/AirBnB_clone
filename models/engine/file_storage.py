@@ -10,7 +10,7 @@ class FileStorage:
     __file_path = 'file.json'
     __objects = {}
 
-     Classes = {
+    Classes = {
             'City': city.City,
             'Place': place.Place,
             'Review': review.Review,
