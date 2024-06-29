@@ -1,5 +1,6 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
+from datetime import datetime
 import json
 from models import amenity, city, place, review, state, user
 
@@ -21,11 +22,13 @@ class FileStorage:
 
     def save(self):
         """Saves storage dictionary to file"""
-        with open(FileStorage.__file_path, 'w') as f:
-            temp = {}
-            temp.update(FileStorage.__objects)
+        with open(self.__file_path, 'w') as f:
+            temp = {k: v.to_dict() for k, v in self.__objects.items()}
             for key, val in temp.items():
-                temp[key] = val.to_dict()
+                # Convert datetime objects to strings in ISO 8601 format
+                for attr, value in val.items():
+                    if isinstance(value, datetime):
+                        temp[key][attr] = value.isoformat()
             json.dump(temp, f)
 
     def delete(self, obj=None):
