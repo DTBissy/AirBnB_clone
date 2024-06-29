@@ -151,14 +151,14 @@ class HBNBCommand(cmd.Cmd):
             key, value = arg_toks[0], arg_toks[1]
 
             # convert values to appropriate data types
-            if value.startswith('"' or '>') and value.endswith('"' or '>'):
+            if value.startswith('"') and value.endswith('"'):
                 value = value[1:-1].replace('_', ' ')
             try:
-                value = float(value)
+                value = int(value)
             except ValueError:
                 pass
             try:
-                value = int(value)
+                value = float(value)
             except ValueError:
                 pass
             attributes[key] = value
