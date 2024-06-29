@@ -2,38 +2,33 @@
 """This module defines a base class for all models in our hbnb clone"""
 import uuid
 from datetime import datetime
-from sqlalchemy import create_engine, Column, String, DateTime, Integer, Float
+from sqlalchemy import Column, String, DateTime
 from sqlalchemy.ext.declarative import declarative_base
-from sqlalchemy.orm import sessionmaker
 
 
 Base = declarative_base()
+
 class BaseModel:
     __tablename__ = 'BaseModel'
 
     id = Column(String(60), primary_key=True, nullable=False)
-    created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
-    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow, onupdate=datetime.utcnow)
+    created_at = Column(DateTime, nullable=False, default=datetime.utcnow())
+    updated_at = Column(DateTime, nullable=False, default=datetime.utcnow())
 
     """A base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
-        """Instatntiates a new model"""
+        """Instantiates a new model"""
         if not kwargs:
             self.id = str(uuid.uuid4())
-            self.created_at = datetime.now()
-            self.updated_at = datetime.now()
+            self.created_at = datetime.utcnow()
+            self.updated_at = datetime.utcnow()
         else:
             self.id = kwargs.get('id', str(uuid.uuid4()))
-            self.created_at = datetime.strptime(kwargs.get('created_at', datetime.now().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
-            self.updated_at = datetime.strptime(kwargs.get('updated_at', datetime.now().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+            self.created_at = datetime.strptime(kwargs.get('created_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
+            self.updated_at = datetime.strptime(kwargs.get('updated_at', datetime.utcnow().isoformat()), '%Y-%m-%dT%H:%M:%S.%f')
             if '__class__' in kwargs:
                 del kwargs['__class__']
             self.__dict__.update(kwargs)
-        # Iterate over key-value pairs in kwargs
-        for key, value in kwargs.items():
-            # Set the instance attribute if it doesn't already exist
-            if not hasattr(self, key):
-                setattr(self, key, value)
 
     def __str__(self):
         """Returns a string representation of the instance"""
@@ -41,23 +36,22 @@ class BaseModel:
         return '[{}] ({}) {}'.format(cls, self.id, self.__dict__)
 
     def save(self):
+        from models import storage
         """Updates updated_at with current time when instance is changed"""
         from models import storage
-        self.updated_at = datetime.now()
+        self.updated_at = datetime.utcnow()
         storage.new(self)
         storage.save()
 
     def to_dict(self):
         """Convert instance into dict format"""
-        dictionary = {}
-        dictionary.update(self.__dict__)
-        dictionary.update({'__class__':
-                          (str(type(self)).split('.')[-1]).split('\'')[0]})
-        dictionary['created_at'] = self.created_at.isoformat()
-        dictionary['updated_at'] = self.updated_at.isoformat()
+        dictionary = self.__dict__.copy()
+        dictionary.update({'__class__': (str(type(self)).split('.')[-1]).split('\'')[0]})
+        dictionary['created_at'] = self.created_at.format()
+        dictionary['updated_at'] = self.updated_at.format()
         # Remove the _sa_instance_state key if it exists
-        result.pop('_sa_instance_state', None)
-        return result
+        dictionary.pop('_sa_instance_state', None)
+        return dictionary
 
     def delete(self):
         from models import storage
