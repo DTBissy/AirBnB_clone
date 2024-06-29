@@ -47,8 +47,8 @@ class BaseModel:
         """Convert instance into dict format"""
         dictionary = self.__dict__.copy()
         dictionary.update({'__class__': (str(type(self)).split('.')[-1]).split('\'')[0]})
-        dictionary['created_at'] = self.created_at.format()
-        dictionary['updated_at'] = self.updated_at.format()
+        dictionary['created_at'] = self.created_at
+        dictionary['updated_at'] = self.updated_at
         # Remove the _sa_instance_state key if it exists
         dictionary.pop('_sa_instance_state', None)
         return dictionary
