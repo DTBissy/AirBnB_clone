@@ -1,12 +1,8 @@
 #!/usr/bin/python3
-"""This module instantiates an object of class FileStorage"""
-from models.engine.file_storage import FileStorage
+"""This module instantiates an object of the appropriate storage class"""
+import os
 
-#!/usr/bin/python3
-
-"""initializes FileStorage class"""
-
-from models.engine.file_storage import FileStorage
+# Import classes and models
 from models.base_model import BaseModel
 from models.user import User
 from models.city import City
@@ -15,15 +11,26 @@ from models.place import Place
 from models.review import Review
 from models.amenity import Amenity
 
+# Dictionary of classes
 class_dict = {
-    "BaseModel" : BaseModel,
-    "User" : User,
-    "City" : City,
-    "State" : State,
-    "Place" : Place,
-    "Review" : Review,
-    "Amenity" : Amenity,
+    "BaseModel": BaseModel,
+    "User": User,
+    "City": City,
+    "State": State,
+    "Place": Place,
+    "Review": Review,
+    "Amenity": Amenity,
 }
 
-storage = FileStorage()
+# Conditional import and instantiation based on environment variable
+storage_type = os.getenv('HBNB_TYPE_STORAGE')
+
+if storage_type == 'db':
+    from models.engine.db_storage import DBStorage
+    storage = DBStorage()
+else:
+    from models.engine.file_storage import FileStorage
+    storage = FileStorage()
+
+# Reload storage
 storage.reload()
