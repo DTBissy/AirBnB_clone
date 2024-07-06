@@ -10,7 +10,7 @@ class Place(BaseModel, Base):
     __tablename__ = 'places'
 
     city_id = Column(String(60), ForeignKey('cities.id'), nullable=False)
-    user_id = Column(String(60), ForeignKey('users.id'), nullable=False)
+    user_id = Column(String(60), ForeignKey('user.id'), nullable=False)
     name = Column(String(128), nullable=False)
     description = Column(String(1024))
     number_rooms = Column(Integer, nullable=False, default=0)
@@ -21,8 +21,8 @@ class Place(BaseModel, Base):
     longitude = Column(Float)
     amenity_ids = []
 
-    # # Relationship with User
-    # user = relationship("User", backref="places")
+    # Relationship with User
+    # user = relationship("User", backref="place")
 
-    # # Relationship with City
-    # city = relationship("City", backref="places")
+    # Relationship with City
+    # city = relationship("City", backref="place")

@@ -9,5 +9,5 @@ class City(BaseModel, Base):
     """This class represents a city"""
     __tablename__ = 'cities'
     name = Column(String(128), nullable=False)
-    state_id = Column(Integer, ForeignKey('states.id'), nullable=False)
+    # state_id = Column(Integer, ForeignKey('states.id'), nullable=False)
     # state = relationship('State', backref='cities')
