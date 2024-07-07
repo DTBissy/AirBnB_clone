@@ -12,9 +12,11 @@ class FileStorage:
 
     def all(self, cls=None):
         """Gets all objects from storage, optionally filtered by class"""
-        if cls:
-            return [v for v in self.__objects.values() if isinstance(v, cls)]
-        return self.__objects
+        if cls is None:
+            return self.__objects
+        else:
+            return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
+
     
     def new(self, obj):
         """Adds new object to storage dictionary"""
@@ -59,7 +61,11 @@ class FileStorage:
             with open(FileStorage.__file_path, 'r') as f:
                 temp = json.load(f)
                 for key, val in temp.items():
-                        self.all()[key] = classes[val['__class__']](**val)
+                    self.all()[key] = classes[val['__class__']](**val)
         except FileNotFoundError:
             pass
+
+    def close(self):
+        """Calls the reload method"""
+        self.reload()
     

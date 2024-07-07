@@ -6,12 +6,15 @@ from sqlalchemy.orm import scoped_session, sessionmaker
 from models.base_model import Base
 from models.city import City
 from models.state import State
+from models.engine.file_storage import FileStorage
 # Import other models as necessary
 
 class DBStorage:
     """This class manages storage of hbnb models in MySQL database"""
     __engine = None
     __session = None
+    __file_storage = FileStorage()
+
 
     def __init__(self):
         """Initialize the storage engine"""
@@ -64,5 +67,13 @@ class DBStorage:
         
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        Session = scoped_session(session_factory)
-        self.__session = Session()
+        self.__session = session_factory()
+
+    @property
+    def file_storage(self):
+        """Get the file storage instance"""
+        return self.__file_storage
+
+    def close(self):
+        """Close the current database session"""
+        self.__session.close()

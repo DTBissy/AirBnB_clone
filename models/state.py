@@ -5,6 +5,7 @@ from sqlalchemy.orm import relationship
 from models.base_model import BaseModel, Base
 from models.city import City
 import models
+from models.engine.file_storage import FileStorage
 
 class State(BaseModel, Base):
     """ State class """
@@ -17,7 +18,8 @@ class State(BaseModel, Base):
     def cities(self):
         """Getter attribute cities that returns the list of City instances
         with state_id equals to the current State.id for FileStorage relationship."""
-        if models.storage_type == 'db':
-            return self.cities
-        else:
-            return [city for city in models.storage.all(City).values() if city.state_id == self.id]
+        city_list = []
+        for city in models.storage.all(City).values():
+            if city.state_id == self.id:
+                city_list.append(city)
+        return city_list
