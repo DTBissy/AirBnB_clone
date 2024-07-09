@@ -1,45 +1,52 @@
 #!/usr/bin/python3
 """This module defines a class to manage file storage for hbnb clone"""
-from datetime import datetime
+import inspect
 import json
-from models import amenity, city, place, review, state, user
+from models import city, place, review, state, amenity, user, base_model
 
 
 class FileStorage:
     """This class manages storage of hbnb models in JSON format"""
     __file_path = 'file.json'
     __objects = {}
+    CDIC = {
+            'City': city.City,
+            'Place': place.Place,
+            'Review': review.Review,
+            'State': state.State,
+            'Amenity': amenity.Amenity,
+            'User': user.User
+        }
 
     def all(self, cls=None):
-        """Gets all objects from storage, optionally filtered by class"""
-        if cls is None:
-            return self.__objects
-        else:
-            return {k: v for k, v in self.__objects.items() if isinstance(v, cls)}
+        """query on the current database session"""
+        new_dict = {}
+        classes = self.CDIC
+        for class_name, class_obj in classes.items():
+            if cls is None or cls is class_obj or cls is class_name:
+                objs = self.__session.query(class_obj).all()
+                for obj in objs:
+                    key = obj.__class__.__name__ + "." + obj.id
+                    new_dict[key] = obj
+        return new_dict
 
-    
     def new(self, obj):
         """Adds new object to storage dictionary"""
-        self.all().update({obj.to_dict()['__class__'] + '.' + obj.id: obj})
+        obj_dict = obj.to_dict()
+        if '__class__' in obj_dict:
+            key = obj_dict['__class__'] + '.' + obj.id
+            self.all().update({key: obj})
+        else:
+            print("Error: '__class__' key not found in object dictionary.")
 
     def save(self):
         """Saves storage dictionary to file"""
-        with open(self.__file_path, 'w') as f:
-            temp = {k: v.to_dict() for k, v in self.__objects.items()}
+        with open(FileStorage.__file_path, 'w') as f:
+            temp = {}
+            temp.update(FileStorage.__objects)
             for key, val in temp.items():
-                # Convert datetime objects to strings in ISO 8601 format
-                for attr, value in val.items():
-                    if isinstance(value, datetime):
-                        temp[key][attr] = value.isoformat()
+                temp[key] = val.to_dict()
             json.dump(temp, f)
-
-    def delete(self, obj=None):
-        """Deletes objects from __objects"""
-        if obj is not None:
-            key = f"{obj.__class__.__name__}.{obj.id}"
-            if key in self.__objects:
-                del self.__objects[key]
-
 
     def reload(self):
         """Loads storage dictionary from file"""
@@ -65,7 +72,13 @@ class FileStorage:
         except FileNotFoundError:
             pass
 
+    def delete(self, obj=None):
+        """ Woah new public instances. """
+        if obj is not None:
+            key = f"{obj.__class__.__name__}.{obj.id}"
+            if key in self.__objects:
+                del self.__objects[key]
+
     def close(self):
-        """Calls the reload method"""
+        """Handles closing the session"""
         self.reload()
-    

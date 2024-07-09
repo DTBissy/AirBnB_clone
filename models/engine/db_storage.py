@@ -1,13 +1,11 @@
 #!/usr/bin/python3
-"""DBStorage module for HBNB project"""
+"""This module defines a class to manage file storage for hbnb clone
+with new SQL database.
+"""
+from models.base_model import Base, BaseModel
 import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import scoped_session, sessionmaker
-from models.base_model import Base
-from models.city import City
-from models.state import State
+from models import city, place, review, state, amenity, user
 from models.engine.file_storage import FileStorage
-# Import other models as necessary
 
 
 class DBStorage:
@@ -30,52 +28,51 @@ class DBStorage:
                                       pool_pre_ping=True)
         if os.getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
-            
+
+    def reload(self):
+        """ Creates database tables and initializes a new session. """
+        from sqlalchemy.orm import scoped_session, sessionmaker
+        Base.metadata.create_all(self.__engine)
+        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
+        self.__session = Session()
+
     def all(self, cls=None):
-        """Query all objects or specific class objects from the current database session"""
-        obj_dict = {}
+        """ Queries all objects of a given class from the database. """
+        objects = {}
         if cls:
-            objs = self.__session.query(cls).all()
-            for obj in objs:
+            if isinstance(cls, str):
+                cls = eval(cls)
+            query = self.__session.query(cls).all()
+            for obj in query:
                 key = f'{obj.__class__.__name__}.{obj.id}'
-                obj_dict[key] = obj
+                objects[key] = obj
         else:
-            for model in [City, State]:  # Add other models as needed
-                objs = self.__session.query(model).all()
-                for obj in objs:
+            classes = [state.State, city.City, user.User]
+            for cls in classes:
+                query = self.__session.query(cls).all()
+                for obj in query:
                     key = f'{obj.__class__.__name__}.{obj.id}'
-                    obj_dict[key] = obj
-        return obj_dict
+                    objects[key] = obj
+        return objects
 
     def new(self, obj):
-        """Add the object to the current database session"""
+        """ Adds a new object to the session. """
         self.__session.add(obj)
 
     def save(self):
-        """Commit all changes of the current database session"""
+        """ Commits changes to the database. """
         self.__session.commit()
 
     def delete(self, obj=None):
-        """Delete from the current database session obj if not None"""
+        """ Deletes an object from the session. """
         if obj:
             self.__session.delete(obj)
 
-    def reload(self):
-        """Create all tables in the database and create the current database session"""
-        from models.user import User  # Ensure all models are imported
-        from models.place import Place
-        from models.review import Review
-        from models.amenity import Amenity
-        
-        Base.metadata.create_all(self.__engine)
-        Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
-        self.__session = Session() 
-
     @property
     def file_storage(self):
-        """Get the file storage instance"""
+        """ Returns the instance of FileStorage. """
         return self.__file_storage
 
     def close(self):
-        """Close the current database session"""
+        """Handles closing the session"""
         self.__session.close()

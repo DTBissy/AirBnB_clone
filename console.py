@@ -10,8 +10,6 @@ from models.state import State
 from models.city import City
 from models.amenity import Amenity
 from models.review import Review
-from datetime import datetime
-import models
 
 
 class HBNBCommand(cmd.Cmd):
@@ -75,7 +73,7 @@ class HBNBCommand(cmd.Cmd):
                 pline = pline[2].strip()  # pline is now str
                 if pline:
                     # check for *args or **kwargs
-                    if pline[0] == '{' and pline[-1] =='}'\
+                    if pline[0] == '{' and pline[-1] == '}'\
                             and type(eval(pline)) is dict:
                         _args = pline
                     else:
@@ -98,82 +96,32 @@ class HBNBCommand(cmd.Cmd):
         """ Method to exit the HBNB console"""
         exit()
 
-    def help_quit(self):
-        """ Prints the help documentation for quit  """
-        print("Exits the program with formatting\n")
-
-    def do_EOF(self, arg):
-        """ Handles EOF to exit program """
-        print()
-        exit()
-
-    def help_EOF(self):
-        """ Prints the help documentation for EOF """
-        print("Exits the program without formatting\n")
-
-    def emptyline(self):
-        """ Overrides the emptyline method of CMD """
-        pass
-
-    def do_create(self, args):
-        """creates new instance of class
-
-        additional attributes can be provided as key/value pairs
-        """
-
-        if not args:
+    def do_create(self, line):
+        """ Command syntax: create <Class name> <param 1> <param 2> <param 3>... """
+        if not line:
             print("** class name missing **")
             return
-
-        args_list = args.split()
-        # assumes first arg is class name
-        class_name = args_list[0]
-
-        # checks if arg is valid <class name> (in class_dict)
-        if class_name not in models.class_dict:
+        args = line.split()
+        if args[0] not in HBNBCommand.classes.keys():
             print("** class doesn't exist **")
             return
-
-        # since class name is taken care of
-        # now evaluate remaining args from input
-        args_list = args_list[1:]
-
-        attributes = {}
-
-        # search through the list of arguments
-        for arg in args_list:
-            # key/value pairs split and saved into arg_toks list
-            arg_toks = arg.split("=")
-
-            # Unquote, underscore to space
-            if len(arg_toks) != 2:
-                continue
-            key, value = arg_toks[0], arg_toks[1]
-
-            # convert values to appropriate data types
-            if value.startswith('"') and value.endswith('"'):
-                value = value[1:-1].replace('_', ' ')
-            try:
-                value = int(value)
-            except ValueError:
-                pass
-            try:
-                value = float(value)
-            except ValueError:
-                pass
-            attributes[key] = value
-
-        now = datetime.now().isoformat()
-        attributes['created_at'] = now
-        attributes['updated_at'] = now
-
-        new_instance = models.class_dict[class_name](**attributes)
-
-        # save call
-        storage.new(new_instance)
-        storage.save()
-
-        print(new_instance.id)
+        kwargs = {}
+        for param in range(1, len(args)):
+            key, value = args[param].split("=")
+            if value[0] == '"':
+                value = value.replace('_', ' ').strip('"')
+            else:
+                try:
+                    value = eval(value)
+                except (SyntaxError, NameError):
+                    continue
+            kwargs[key] = value
+        if len(kwargs) == 0:
+            obj = eval(args[0])()
+        else:
+            obj = eval(args[0])(**kwargs)
+        print(obj.id)
+        obj.save()
 
     def help_create(self):
         """ Help information for the create method """
@@ -255,11 +203,11 @@ class HBNBCommand(cmd.Cmd):
             if args not in HBNBCommand.classes:
                 print("** class doesn't exist **")
                 return
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 if k.split('.')[0] == args:
                     print_list.append(str(v))
         else:
-            for k, v in storage.all().items():
+            for k, v in storage._FileStorage__objects.items():
                 print_list.append(str(v))
 
         print(print_list)
