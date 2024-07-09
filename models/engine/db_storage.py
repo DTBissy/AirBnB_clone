@@ -9,26 +9,28 @@ from models.state import State
 from models.engine.file_storage import FileStorage
 # Import other models as necessary
 
+
 class DBStorage:
-    """This class manages storage of hbnb models in MySQL database"""
+    """
+    Handles long-term storage of all class instances via SQLAlchemy ORM.
+    Thank you Doug.
+    """
     __engine = None
     __session = None
     __file_storage = FileStorage()
 
-
     def __init__(self):
-        """Initialize the storage engine"""
-        user = os.getenv('HBNB_MYSQL_USER')
-        password = os.getenv('HBNB_MYSQL_PWD')
-        host = os.getenv('HBNB_MYSQL_HOST', 'localhost')
-        db = os.getenv('HBNB_MYSQL_DB')
-        env = os.getenv('HBNB_ENV')
-
-        self.__engine = create_engine(f'mysql+mysqldb://{user}:{password}@{host}/{db}', pool_pre_ping=True)
-
-        if env == 'test':
+        """ Initializes the database engine. """
+        from sqlalchemy import create_engine
+        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
+                                      format(os.environ['HBNB_MYSQL_USER'],
+                                             os.environ['HBNB_MYSQL_PWD'],
+                                             os.environ['HBNB_MYSQL_HOST'],
+                                             os.environ['HBNB_MYSQL_DB']),
+                                      pool_pre_ping=True)
+        if os.getenv('HBNB_ENV') == 'test':
             Base.metadata.drop_all(self.__engine)
-
+            
     def all(self, cls=None):
         """Query all objects or specific class objects from the current database session"""
         obj_dict = {}
@@ -68,7 +70,7 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = Session() 
-        
+
     @property
     def file_storage(self):
         """Get the file storage instance"""
