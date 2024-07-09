@@ -1,3 +1,5 @@
+#!/usr/bin/python3
+""" Place class """
 from sqlalchemy import Table
 import os
 from models.amenity import Amenity
