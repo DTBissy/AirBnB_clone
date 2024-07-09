@@ -39,12 +39,20 @@ class DBStorage:
     def all(self, cls=None):
         """ Queries all objects of a given class from the database. """
         objects = {}
-        classes = [state.State, city.City, user.User]
-        for cls in classes:
+        if cls:
+            if isinstance(cls, str):
+                cls = eval(cls)
             query = self.__session.query(cls).all()
             for obj in query:
                 key = f'{obj.__class__.__name__}.{obj.id}'
                 objects[key] = obj
+        else:
+            classes = [state.State, city.City, user.User]
+            for cls in classes:
+                query = self.__session.query(cls).all()
+                for obj in query:
+                    key = f'{obj.__class__.__name__}.{obj.id}'
+                    objects[key] = obj
         return objects
 
     def new(self, obj):
