@@ -68,7 +68,8 @@ class DBStorage:
         Base.metadata.create_all(self.__engine)
         session_factory = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = session_factory()
-
+        Session = scoped_session(session_factory)
+        Session.remove()
     @property
     def file_storage(self):
         """Get the file storage instance"""
