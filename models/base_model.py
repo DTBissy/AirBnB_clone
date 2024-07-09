@@ -13,7 +13,7 @@ class BaseModel:
     created_at = Column(DateTime, nullable=False, default=datetime.utcnow)
     updated_at = Column(DateTime, nullable=False, default=datetime.utcnow)
 
-    """A base class for all hbnb models"""
+    """base class for all hbnb models"""
     def __init__(self, *args, **kwargs):
         """Instantiates a new model"""
         if not kwargs:
@@ -35,7 +35,7 @@ class BaseModel:
 
     def save(self):
         from models import storage
-        """Updates updated_at with current time when instance is changed"""
+        """Updates updated_at with current time"""
         from models import storage
         self.updated_at = datetime.utcnow()
         storage.new(self)

@@ -19,7 +19,7 @@ class FileStorage:
         }
 
     def all(self, cls=None):
-        """query on the current database session"""
+        """the current database session"""
         new_dict = {}
         classes = self.CDIC
         for class_name, class_obj in classes.items():

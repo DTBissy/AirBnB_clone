@@ -6,7 +6,7 @@ from sqlalchemy import Column, String, Integer, Float, ForeignKey
 from sqlalchemy.orm import relationship
 
 class Place(BaseModel, Base):
-    """ Place inherits from BaseModel and Base and a nice place to stay. """
+    """ Place inherits from BaseModel and Base """
     __tablename__ = 'places'
     city_id = Column(String(60), ForeignKey("cities.id"), nullable=False)
     user_id = Column(String(60), ForeignKey("users.id"), nullable=False)
@@ -30,7 +30,7 @@ class Place(BaseModel, Base):
     if os.getenv('HBNB_TYPE_STORAGE') == 'file':
         @property
         def amenities(self):
-            """ Getter attribute amenities that returns the list of Amenity instances """
+            """ Getter attribute amenities  """
             amenities_list = []
             from models import storage
             all_amenities = storage.all(Amenity)
@@ -41,6 +41,6 @@ class Place(BaseModel, Base):
 
         @amenities.setter
         def amenities(self, obj):
-            """ Setter attribute amenities that handles appending Amenity.id """
+            """ Setter attribute amenities  """
             if isinstance(obj, Amenity):
                 self.amenity_ids.append(obj.id)
