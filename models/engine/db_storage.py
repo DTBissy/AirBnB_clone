@@ -36,24 +36,18 @@ class DBStorage:
         Session = sessionmaker(bind=self.__engine, expire_on_commit=False)
         self.__session = Session()
 
-    def all(self, cls=None):
+    def all(self, cls_name):
         """ Queries all objects of a given class from the database. """
-        objects = {}
-        if cls:
-            if isinstance(cls, str):
-                cls = eval(cls)
-            query = self.__session.query(cls).all()
-            for obj in query:
-                key = f'{obj.__class__.__name__}.{obj.id}'
-                objects[key] = obj
-        else:
-            classes = [state.State, city.City, user.User]
-            for cls in classes:
-                query = self.__session.query(cls).all()
-                for obj in query:
-                    key = f'{obj.__class__.__name__}.{obj.id}'
-                    objects[key] = obj
-        return objects
+        try:
+            result = {}
+            cls = eval(cls_name)
+            objects = self.session.query(cls).all()
+            for obj in objects:
+                result[obj.id] = obj
+            return result
+        except Exception as e:
+            print(f"Error fetching {cls_name}:")
+            return {}
 
     def new(self, obj):
         """ Adds a new object to the session. """
