@@ -3,10 +3,6 @@
 import inspect
 import json
 from models import city, place, review, state, amenity, user, base_model
-import os
-from sqlalchemy import create_engine
-from sqlalchemy.orm import sessionmaker
-Base = base_model.Base
 
 
 class FileStorage:
@@ -22,18 +18,7 @@ class FileStorage:
             'User': user.User
         }
     
-    def __init__(self):
-        """ Initializes the database engine. """
-        from sqlalchemy import create_engine
-        self.__engine = create_engine('mysql+mysqldb://{}:{}@{}/{}'.
-                                      format(os.environ['HBNB_MYSQL_USER'],
-                                             os.environ['HBNB_MYSQL_PWD'],
-                                             os.environ['HBNB_MYSQL_HOST'],
-                                             os.environ['HBNB_MYSQL_DB']),
-                                      pool_pre_ping=True)
-        if os.getenv('HBNB_ENV') == 'test':
-            Base.metadata.drop_all(self.__engine)
-
+    
 
     def all(self, cls=None):
         """the current database session"""
